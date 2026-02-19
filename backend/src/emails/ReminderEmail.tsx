@@ -92,12 +92,12 @@ export const ReminderEmail = ({
                         <Text style={text}><strong>Are you still coming?</strong></Text>
                         <Row>
                             <Column style={{ paddingRight: '8px' }}>
-                                <Button style={confirmButton} href={`${frontendUrl}/api/attendance/confirm?id=${registrationId}&status=attending`}>
+                                <Button style={confirmButton} href={`${frontendUrl}/attendance-confirmed?id=${registrationId}&status=attending`}>
                                     ✅ Yes, I'm there
                                 </Button>
                             </Column>
                             <Column style={{ paddingLeft: '8px' }}>
-                                <Button style={declineButton} href={`${frontendUrl}/api/attendance/confirm?id=${registrationId}&status=declined`}>
+                                <Button style={declineButton} href={`${frontendUrl}/attendance-confirmed?id=${registrationId}&status=declined`}>
                                     ❌ Can't make it
                                 </Button>
                             </Column>

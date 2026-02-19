@@ -87,7 +87,7 @@ export const ConfirmationEmail = ({
                         <Text style={text}>
                             <strong>Your Registration ID:</strong> {registrationId}
                         </Text>
-                        <Link href={`${frontendUrl}/api/attendance/confirm?id=${registrationId}&status=attending`} style={link}>
+                        <Link href={`${frontendUrl}/attendance-confirmed?id=${registrationId}&status=attending`} style={link}>
                             Confirm Attendance
                         </Link>
                     </Section>
