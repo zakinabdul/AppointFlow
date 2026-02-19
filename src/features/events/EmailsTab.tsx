@@ -28,22 +28,31 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
     const [sending, setSending] = useState(false);
     const [registrantCount, setRegistrantCount] = useState(0);
 
-    useEffect(() => {
-        // Mock stats for now or fetch from backend if implemented
-        // In a real app, we'd fetch this from our backend which queries Inngest/Resend
-        setStats({
-            sent: 124,
-            openRate: 45,
-            scheduled: 2
-        });
+    // Event Settings State (Moved up to fix Hook Error #300)
+    const [eventSettings, setEventSettings] = useState<any>(null);
 
-        // Fetch registrant count for broadcast estimate
+    useEffect(() => {
+        // Fetch event settings
+        supabase.from('events').select('send_24h_reminder, custom_reminder_hours').eq('id', eventId).single()
+            .then(({ data }) => {
+                if (data) setEventSettings(data);
+            });
+
+        // Fetch registrant count for broadcast estimate & sent count proxy
         const fetchCount = async () => {
             const { count } = await supabase
                 .from('registrations')
                 .select('*', { count: 'exact', head: true })
                 .eq('event_id', eventId);
+
             setRegistrantCount(count || 0);
+
+            // Update stats based on real data where possible
+            setStats({
+                sent: count || 0, // Approx: 1 confirmation per registrant
+                openRate: 0, // Placeholder until webhook analytics are added
+                scheduled: 0 // Will be calculated in render
+            });
         };
         fetchCount();
     }, [eventId]);
@@ -134,11 +143,7 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
     // In a real app, pass `eventSettings` as prop.
     // We will show a static list based on what we know for now or just generic info.
     // Actually, let's fetch event details to show accurate scheduled status.
-    const [eventSettings, setEventSettings] = useState<any>(null);
-    useEffect(() => {
-        supabase.from('events').select('send_24h_reminder, custom_reminder_hours').eq('id', eventId).single()
-            .then(({ data }) => setEventSettings(data));
-    }, [eventId]);
+
 
     return (
         <div className="space-y-6">
