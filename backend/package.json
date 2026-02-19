@@ -4,8 +4,9 @@
     "description": "Backend for Evenza EventAI",
     "main": "src/index.ts",
     "scripts": {
-        "start": "ts-node src/index.ts",
-        "dev": "nodemon src/index.ts"
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "nodemon src/index.js"
     },
     "keywords": [],
     "author": "",
