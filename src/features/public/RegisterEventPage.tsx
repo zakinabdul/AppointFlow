@@ -110,7 +110,7 @@ export function RegisterEventPage() {
             }
 
             // Register
-            const { error: regError } = await supabase
+            const { data: newRegistration, error: regError } = await supabase
                 .from('registrations')
                 .insert([
                     {
@@ -122,8 +122,29 @@ export function RegisterEventPage() {
                         professional_status: data.professionalStatus
                     }
                 ])
+                .select()
+                .single()
 
             if (regError) throw regError
+
+            // Send Confirmation Email via Backend
+            try {
+                await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/email/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        registrantName: data.fullName,
+                        registrantEmail: data.email,
+                        eventDetails: event,
+                        registrationId: newRegistration.id
+                    })
+                });
+            } catch (emailError) {
+                console.error("Failed to send confirmation email", emailError);
+                // Don't block success UI, just log it
+            }
 
             // Increment count (RPC or optimistic update would be better, but direct update for MVP since RLS usually blocks update on events table for public)
             // Actually, we can't update 'events' table as public user due to RLS.

@@ -20,6 +20,8 @@ const createEventSchema = z.object({
     start_date: z.string(),
     start_time: z.string(),
     capacity: z.string().transform(val => parseInt(val, 10)).pipe(z.number().min(1, 'Capacity must be at least 1')),
+    customReminderHours: z.string().transform(val => val ? parseInt(val, 10) : undefined).optional(),
+    reminderNote: z.string().optional(),
 })
 
 type CreateEventForm = z.infer<typeof createEventSchema>
@@ -136,6 +138,24 @@ export function CreateEventPage() {
                             <Label htmlFor="capacity">Capacity</Label>
                             <Input id="capacity" type="number" placeholder="100" {...register('capacity')} />
                             {errors.capacity && <p className="text-sm text-red-500">{errors.capacity.message}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="customReminderHours">Custom Reminder (Hours before)</Label>
+                                <Input id="customReminderHours" type="number" placeholder="e.g. 2" {...register('customReminderHours')} />
+                                <p className="text-xs text-muted-foreground">Optional. Sends an extra email.</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="reminderNote">Things attendees should know (included in reminder)</Label>
+                            <textarea
+                                id="reminderNote"
+                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                placeholder="Bring your laptop, parking is available at..."
+                                {...register('reminderNote')}
+                            />
                         </div>
 
                         {error && <p className="text-sm text-red-500">{error}</p>}
