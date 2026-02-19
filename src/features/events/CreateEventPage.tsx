@@ -54,9 +54,14 @@ export function CreateEventPage() {
                 slug = Math.random().toString(36).substring(2, 8)
             }
 
+            // Extract and map fields
+            const { customReminderHours, reminderNote, ...eventData } = data;
+
             const { error } = await supabase.from('events').insert([
                 {
-                    ...data,
+                    ...eventData,
+                    custom_reminder_hours: customReminderHours,
+                    reminder_note: reminderNote,
                     slug,
                     organizer_id: user.id
                 }
