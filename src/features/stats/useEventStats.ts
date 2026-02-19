@@ -16,6 +16,7 @@ export type EventStats = {
     totalRegistrations: number
     professionalStatusBreakdown: { name: string; value: number }[]
     registrationTrend: { date: string; count: number }[]
+    eventTitle: string
 }
 
 export function useEventStats(eventId: string | undefined) {
@@ -28,6 +29,16 @@ export function useEventStats(eventId: string | undefined) {
 
         const fetchStats = async () => {
             try {
+                // Fetch event details
+                const { data: eventData, error: eventError } = await supabase
+                    .from('events')
+                    .select('title')
+                    .eq('id', eventId)
+                    .single()
+
+                if (eventError) throw eventError
+
+                // Fetch registrations
                 const { data: registrantsData, error: regError } = await supabase
                     .from('registrations')
                     .select('*')
@@ -63,7 +74,8 @@ export function useEventStats(eventId: string | undefined) {
                     registrants,
                     totalRegistrations,
                     professionalStatusBreakdown,
-                    registrationTrend
+                    registrationTrend,
+                    eventTitle: eventData?.title || 'Event'
                 })
             } catch (err: any) {
                 setError(err.message)
