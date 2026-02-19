@@ -9,6 +9,8 @@ import { AuthProvider } from "./features/auth/AuthContext"
 import { RegisterEventPage } from "./features/public/RegisterEventPage"
 import { CreateEventPage } from "./features/events/CreateEventPage"
 import { EventStatsPage } from "./features/stats/EventStatsPage"
+import { AttendanceConfirmedPage } from "./features/public/AttendanceConfirmedPage"
+
 
 function App() {
     return (
@@ -31,6 +33,8 @@ function App() {
                 {/* Public Event Routes */}
                 <Route path="/register/:eventId" element={<RegisterEventPage />} />
                 <Route path="/e/:slug" element={<RegisterEventPage />} />
+                <Route path="/attendance-confirmed" element={<AttendanceConfirmedPage />} />
+
 
                 {/* Catch all */}
                 <Route path="*" element={<Navigate to="/login" replace />} />

@@ -1,4 +1,5 @@
-import fetch from 'node-fetch';
+// Native fetch is available in Node 18+
+// import fetch from 'node-fetch'; 
 
 async function testEmail() {
     console.log("Testing Registration Confirmation Email...");
