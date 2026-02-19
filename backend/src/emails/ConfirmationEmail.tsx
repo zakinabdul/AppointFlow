@@ -23,6 +23,7 @@ interface ConfirmationEmailProps {
     meetingLink?: string;
     registrationId: string;
     frontendUrl: string;
+    aiWelcomeMessage?: string;
 }
 
 export const ConfirmationEmail = ({
@@ -35,6 +36,7 @@ export const ConfirmationEmail = ({
     meetingLink,
     registrationId,
     frontendUrl,
+    aiWelcomeMessage,
 }: ConfirmationEmailProps) => {
     return (
         <Html>
@@ -44,10 +46,15 @@ export const ConfirmationEmail = ({
                 <Container style={container}>
                     <Heading style={h1}>Registration Confirmed! 🎉</Heading>
                     <Text style={text}>Hi {registrantName},</Text>
-                    <Text style={text}>
-                        You are successfully registered for <strong>{eventTitle}</strong>.
-                        We are excited to have you join us!
-                    </Text>
+
+                    {aiWelcomeMessage ? (
+                        <Text style={text}>{aiWelcomeMessage}</Text>
+                    ) : (
+                        <Text style={text}>
+                            You are successfully registered for <strong>{eventTitle}</strong>.
+                            We are excited to have you join us!
+                        </Text>
+                    )}
 
                     <Section style={box}>
                         <Text style={paragraph}>

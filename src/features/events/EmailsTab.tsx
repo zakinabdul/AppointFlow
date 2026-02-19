@@ -68,7 +68,8 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
                 return;
             }
 
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/email/broadcast`, {
+            // Updated endpoint to /send-update to avoid ad-blockers
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/email/send-update`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -76,7 +77,7 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
                     eventTitle,
                     subject,
                     htmlBody: body,
-                    registrants // Passing list to backend as per plan, though backend fetching is safer for large lists
+                    registrants
                 })
             });
 
@@ -98,7 +99,7 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
         return (
             <Card className="max-w-4xl mx-auto">
                 <CardHeader>
-                    <CardTitle>Send Broadcast Email</CardTitle>
+                    <CardTitle>Send Email Update</CardTitle>
                     <CardDescription>Send a message to all {registrantCount} registered attendees.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -128,6 +129,17 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
         );
     }
 
+    // Determine scheduled emails based on props/state (fetching event details here or passed down)
+    // For now assuming we need to fetch event settings to know if 24h is enabled.
+    // In a real app, pass `eventSettings` as prop.
+    // We will show a static list based on what we know for now or just generic info.
+    // Actually, let's fetch event details to show accurate scheduled status.
+    const [eventSettings, setEventSettings] = useState<any>(null);
+    useEffect(() => {
+        supabase.from('events').select('send_24h_reminder, custom_reminder_hours').eq('id', eventId).single()
+            .then(({ data }) => setEventSettings(data));
+    }, [eventId]);
+
     return (
         <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
@@ -138,7 +150,7 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.sent}</div>
-                        <p className="text-xs text-muted-foreground">Total sent via Resend</p>
+                        <p className="text-xs text-muted-foreground">Total sent via Brevo</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -157,7 +169,9 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
                         <Clock className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{stats.scheduled}</div>
+                        <div className="text-2xl font-bold">
+                            {(eventSettings?.send_24h_reminder ? 1 : 0) + (eventSettings?.custom_reminder_hours ? 1 : 0)}
+                        </div>
                         <p className="text-xs text-muted-foreground">Upcoming reminders</p>
                     </CardContent>
                 </Card>
@@ -166,29 +180,62 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
             <div className="flex justify-end">
                 <Button onClick={() => setShowBroadcast(true)}>
                     <Send className="mr-2 h-4 w-4" />
-                    Send Broadcast Email
+                    Send Email Update
                 </Button>
             </div>
 
-            {/* Scheduled Emails List (Mock) */}
             <Card>
                 <CardHeader>
                     <CardTitle>Scheduled Emails</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b pb-4">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-primary/10 p-2 rounded-full">
-                                    <Clock className="h-4 w-4 text-primary" />
+                        {eventSettings?.send_24h_reminder ? (
+                            <div className="flex items-center justify-between border-b pb-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-primary/10 p-2 rounded-full">
+                                        <Clock className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">24-Hour Reminder</p>
+                                        <p className="text-sm text-muted-foreground">Scheduled for 1 day before event</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-medium">24-Hour Reminder</p>
-                                    <p className="text-sm text-muted-foreground">Scheduled for 1 day before event</p>
-                                </div>
+                                <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
                             </div>
-                            <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
-                        </div>
+                        ) : (
+                            <div className="flex items-center justify-between border-b pb-4 opacity-50">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-gray-100 p-2 rounded-full">
+                                        <Clock className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">24-Hour Reminder</p>
+                                        <p className="text-sm text-muted-foreground">Not enabled for this event</p>
+                                    </div>
+                                </div>
+                                <span className="text-sm bg-gray-100 text-gray-700 px-2 py-1 rounded">Inactive</span>
+                            </div>
+                        )}
+
+                        {eventSettings?.custom_reminder_hours && (
+                            <div className="flex items-center justify-between border-b pb-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-primary/10 p-2 rounded-full">
+                                        <Clock className="h-4 w-4 text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">Custom Reminder</p>
+                                        <p className="text-sm text-muted-foreground">Scheduled for {eventSettings.custom_reminder_hours} hours before event</p>
+                                    </div>
+                                </div>
+                                <span className="text-sm bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
+                            </div>
+                        )}
+
+                        {!eventSettings?.send_24h_reminder && !eventSettings?.custom_reminder_hours && (
+                            <p className="text-sm text-muted-foreground text-center py-4">No reminders scheduled.</p>
+                        )}
                     </div>
                 </CardContent>
             </Card>

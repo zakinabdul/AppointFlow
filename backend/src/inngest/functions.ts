@@ -12,6 +12,12 @@ export const send24hrReminder = inngest.createFunction(
     async ({ event, step }: any) => {
         const { eventData, registrants } = event.data;
 
+        // Check if 24h reminder is enabled for this event
+        if (!eventData.send_24h_reminder) {
+            console.log(`[Inngest] 24h reminder skipped for event ${eventData.id} (disabled by organizer)`);
+            return { skipped: true };
+        }
+
         await step.run("send-emails-batch", async () => {
             const emailPromises = registrants.map(async (registrant: any) => {
                 const emailHtml = render(ReminderEmail({

@@ -12,6 +12,34 @@ router.post('/confirm', async (req, res) => {
     try {
         const { registrantName, registrantEmail, eventDetails, registrationId } = req.body;
 
+        // Generate AI Welcome Message
+        let aiMessage = "";
+        try {
+            const prompt = `Generate a short, warm, and professional welcome message for an attendee named ${registrantName} registering for the event "${eventDetails.title}".
+            Event Description: ${eventDetails.description || 'No description provided.'}
+            Context: They just registered. Mention clearly that their registration is confirmed.
+            Keep it under 50 words. Plain text only, no markdown.`;
+
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "llama3-8b-8192",
+                    messages: [{ role: "user", content: prompt }],
+                    max_tokens: 100
+                })
+            });
+
+            const data = await response.json();
+            aiMessage = data.choices[0]?.message?.content || "";
+        } catch (groqError) {
+            console.error("Groq generation failed:", groqError);
+            // Fallback not needed, template handles empty string or default
+        }
+
         const emailHtml = render(ConfirmationEmail({
             registrantName,
             eventTitle: eventDetails.title,
@@ -21,7 +49,8 @@ router.post('/confirm', async (req, res) => {
             isOnline: eventDetails.event_type === 'online',
             meetingLink: eventDetails.meeting_link,
             registrationId,
-            frontendUrl: FRONTEND_URL
+            frontendUrl: FRONTEND_URL,
+            aiWelcomeMessage: aiMessage // Pass generated message to template
         }));
 
         const data = await sendEmail({
@@ -37,11 +66,11 @@ router.post('/confirm', async (req, res) => {
     }
 });
 
-// 2. BROADCAST EMAIL (Trigger Inngest)
-router.post('/broadcast', async (req, res) => {
+// 2. BROADCAST EMAIL (Renamed to /send-update to avoid ad-blockers)
+router.post('/send-update', async (req, res) => {
     try {
         const { eventId, eventTitle, subject, htmlBody, registrants } = req.body;
-        console.log(`[Email Route] Received broadcast request for event "${eventTitle}" with ${registrants?.length} registrants.`);
+        console.log(`[Email Route] Received update request for event "${eventTitle}" with ${registrants?.length} registrants.`);
 
         const result = await inngest.send({
             name: "event/broadcast",
@@ -54,7 +83,7 @@ router.post('/broadcast', async (req, res) => {
             }
         });
 
-        console.log(`[Email Route] Broadcast event sent to Inngest. IDs: ${JSON.stringify(result)}`);
+        console.log(`[Email Route] Update event sent to Inngest. IDs: ${JSON.stringify(result)}`);
 
         res.json({ success: true, message: "Broadcast queued", result });
     } catch (error: any) {
@@ -62,7 +91,8 @@ router.post('/broadcast', async (req, res) => {
     }
 });
 
-// 3. AI GENERATION (Groq)
+// 3. AI GENERATION (Groq) - Removed template gen, using inline for welcome now
+// Keeping generic endpoint if needed for other things
 router.post('/generate-template', async (req, res) => {
     try {
         const { eventName, eventType, date, time, description, notes } = req.body;

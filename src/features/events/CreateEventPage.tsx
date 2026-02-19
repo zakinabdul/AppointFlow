@@ -22,6 +22,7 @@ const createEventSchema = z.object({
     capacity: z.string().transform(val => parseInt(val, 10)).pipe(z.number().min(1, 'Capacity must be at least 1')),
     customReminderHours: z.string().transform(val => val ? parseInt(val, 10) : undefined).optional(),
     reminderNote: z.string().optional(),
+    send24hReminder: z.boolean().default(false),
 })
 
 type CreateEventForm = z.infer<typeof createEventSchema>
@@ -36,6 +37,7 @@ export function CreateEventPage() {
         resolver: zodResolver(createEventSchema),
         defaultValues: {
             event_type: 'online',
+            send24hReminder: false
         }
     })
 
@@ -55,13 +57,14 @@ export function CreateEventPage() {
             }
 
             // Extract and map fields
-            const { customReminderHours, reminderNote, ...eventData } = data;
+            const { customReminderHours, reminderNote, send24hReminder, ...eventData } = data;
 
             const { error } = await supabase.from('events').insert([
                 {
                     ...eventData,
                     custom_reminder_hours: customReminderHours,
                     reminder_note: reminderNote,
+                    send_24h_reminder: send24hReminder,
                     slug,
                     organizer_id: user.id
                 }
@@ -151,6 +154,16 @@ export function CreateEventPage() {
                                 <Input id="customReminderHours" type="number" placeholder="e.g. 2" {...register('customReminderHours')} />
                                 <p className="text-xs text-muted-foreground">Optional. Sends an extra email.</p>
                             </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id="send24hReminder"
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                {...register('send24hReminder')}
+                            />
+                            <Label htmlFor="send24hReminder">Send standard 24-hour reminder email?</Label>
                         </div>
 
                         <div className="space-y-2">
