@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Event } from '../../dashboard/useEvents'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface EventCardProps {
     event: Event
@@ -18,8 +19,7 @@ export function EventCard({ event }: EventCardProps) {
         const identifier = event.slug || event.id
         const url = `${window.location.origin}/e/${identifier}`
         navigator.clipboard.writeText(url)
-        // In a real app, show a toast here
-        alert('Short link copied to clipboard!')
+        toast.success('Short link copied to clipboard!')
     }
 
     return (

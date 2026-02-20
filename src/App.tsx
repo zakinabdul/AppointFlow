@@ -10,7 +10,7 @@ import { RegisterEventPage } from "./features/public/RegisterEventPage"
 import { CreateEventPage } from "./features/events/CreateEventPage"
 import { EventStatsPage } from "./features/stats/EventStatsPage"
 import { AttendanceConfirmedPage } from "./features/public/AttendanceConfirmedPage"
-
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
     return (
@@ -39,6 +39,7 @@ function App() {
                 {/* Catch all */}
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
+            <Toaster position="top-right" richColors />
         </AuthProvider>
     )
 }

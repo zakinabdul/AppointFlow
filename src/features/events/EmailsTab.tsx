@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Send, Loader2, Mail, CheckCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { toast } from 'sonner';
 
 interface EmailsTabProps {
     eventId: string;
@@ -73,7 +74,7 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
                 .eq('event_id', eventId);
 
             if (!registrants || registrants.length === 0) {
-                alert("No registrants to email.");
+                toast.error("No registrants to email yet.");
                 return;
             }
 
@@ -92,13 +93,12 @@ export function EmailsTab({ eventId, eventTitle }: EmailsTabProps) {
 
             if (!response.ok) throw new Error("Failed to send broadcast");
 
-            alert("Broadcast queued successfully!");
+            toast.success("Broadcast queued successfully!");
             setShowBroadcast(false);
             setSubject("");
             setBody("");
         } catch (error) {
-            console.error(error);
-            alert("Failed to send broadcast");
+            toast.error("Failed to queue broadcast: " + error);
         } finally {
             setSending(false);
         }

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
+import { toast } from 'sonner'
 
 const signupSchema = z.object({
     fullName: z.string().min(2, 'Full name is required'),
@@ -61,8 +62,9 @@ export function SignupPage() {
                     ])
 
                 if (profileError) {
-                    console.error('Error creating profile:', profileError)
-                    // Continue anyway as auth was successful
+                    toast.error("Account created, but profile setup failed.")
+                } else {
+                    toast.success("Account created successfully!")
                 }
             }
 
