@@ -31,7 +31,7 @@ app.use(
 app.use('/api/email', emailRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Evenza Backend is running');
+    res.send('AppointFlow Backend is running');
 });
 
 app.listen(port, () => {

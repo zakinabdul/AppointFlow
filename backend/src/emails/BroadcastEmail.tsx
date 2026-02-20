@@ -45,7 +45,7 @@ export const BroadcastEmail = ({
                     <Text style={footer}>
                         This message was sent by the organizer of {eventTitle}.
                         <br />
-                        Evenza App
+                        AppointFlow
                         <br />
                         <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={unsub}>
                             Unsubscribe

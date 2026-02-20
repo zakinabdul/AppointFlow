@@ -8,7 +8,7 @@ export function AuthLayout() {
             <div className="flex flex-col justify-center gap-2 bg-primary p-10 text-primary-foreground lg:w-1/2">
                 <div className="flex items-center gap-2 text-3xl font-bold">
                     <CalendarDays className="h-8 w-8" />
-                    <span>EventAI</span>
+                    <span>AppointFlow</span>
                 </div>
                 <p className="text-xl">Manage your events with intelligence and ease.</p>
             </div>

@@ -17,7 +17,7 @@ export const sendEmail = async ({ to, subject, html }: { to: string, subject: st
     sendSmtpEmail.subject = subject;
     sendSmtpEmail.htmlContent = html;
     sendSmtpEmail.sender = {
-        name: "Evenza",
+        name: "AppointFlow",
         email: process.env.BREVO_SENDER_EMAIL || "zakinabdul.tech@gmail.com"
     };
     sendSmtpEmail.to = [{ email: to }];

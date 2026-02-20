@@ -107,7 +107,7 @@ export const ReminderEmail = ({
                     <Hr style={hr} />
 
                     <Text style={footer}>
-                        Evenza App
+                        AppointFlow
                         <br />
                         <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={unsub}>
                             Unsubscribe from reminders

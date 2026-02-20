@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: eventai-backend
+    name: appointflow-backend
     rootDirectory: backend
     env: node
     plan: free

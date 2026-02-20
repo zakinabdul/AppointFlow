@@ -1,7 +1,7 @@
 {
-    "name": "evenza-backend",
+    "name": "appointflow-backend",
     "version": "1.0.0",
-    "description": "Backend for Evenza EventAI",
+    "description": "Backend for AppointFlow",
     "main": "src/index.ts",
     "scripts": {
         "build": "tsc",
