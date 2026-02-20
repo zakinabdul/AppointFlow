@@ -50,7 +50,7 @@ router.post('/confirm', async (req, res) => {
             meetingLink: eventDetails.meeting_link,
             registrationId,
             frontendUrl: FRONTEND_URL,
-            aiWelcomeMessage: aiMessage // Pass generated message to template
+            aiWelcomeMessage: aiMessage,
         }));
 
         const data = await sendEmail({
@@ -87,6 +87,28 @@ router.post('/send-update', async (req, res) => {
 
         res.json({ success: true, message: "Broadcast queued", result });
     } catch (error: any) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 3. SCHEDULE ATTENDANCE REQUEST
+router.post('/schedule-attendance-request', async (req, res) => {
+    try {
+        const { eventData, registrant, frontendUrl } = req.body;
+        console.log(`[Email Route] Scheduling attendance request for event "${eventData.title}" for ${registrant.email}.`);
+
+        const result = await inngest.send({
+            name: "event/registration.created",
+            data: {
+                eventData,
+                registrant,
+                frontendUrl
+            }
+        });
+
+        res.json({ success: true, message: "Attendance request scheduled", result });
+    } catch (error: any) {
+        console.error("[Email Route] Failed to schedule attendance request:", error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

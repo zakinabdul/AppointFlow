@@ -2,6 +2,7 @@ import { inngest } from "./client";
 import { sendEmail } from "../lib/brevo";
 import { ReminderEmail } from "../emails/ReminderEmail";
 import { BroadcastEmail } from "../emails/BroadcastEmail";
+import { AttendanceRequestEmail } from "../emails/AttendanceRequestEmail";
 import { render } from "@react-email/components";
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -124,5 +125,52 @@ export const sendBroadcastEmail = inngest.createFunction(
 
             await step.sleep("wait-1s", "1s");
         }
+    }
+);
+
+export const scheduleAttendanceRequest = inngest.createFunction(
+    { id: "schedule-attendance-request" },
+    { event: "event/registration.created" },
+    async ({ event, step }: any) => {
+        const { eventData, registrant, frontendUrl } = event.data;
+
+        // Wait until it's time to send the confirmation email
+        // Wait Time = Event Start Time - X Hours
+
+        await step.run("calculate-send-time", async () => {
+            console.log(`[Inngest] Registered for event ${eventData.id}. Will send confirmation request ${eventData.confirmation_email_hours} hours before ${eventData.start_date} ${eventData.start_time}`);
+        });
+
+        // Parse event datetime. Assumes eventData.start_date is YYYY-MM-DD and start_time is HH:MM
+        const eventDateStr = `${eventData.start_date}T${eventData.start_time}:00`;
+        const eventDate = new Date(eventDateStr);
+
+        // Subtract hours
+        const sendDate = new Date(eventDate.getTime() - (eventData.confirmation_email_hours * 60 * 60 * 1000));
+
+        // Sleep until that time
+        await step.sleepUntil("wait-for-confirmation-time", sendDate);
+
+        // Send the email
+        await step.run("send-attendance-request-email", async () => {
+            const emailHtml = render(AttendanceRequestEmail({
+                registrantName: registrant.full_name,
+                eventTitle: eventData.title,
+                eventDate: eventData.start_date,
+                eventTime: eventData.start_time,
+                location: eventData.location,
+                isOnline: eventData.event_type === 'online',
+                meetingLink: eventData.meeting_link,
+                hoursBefore: eventData.confirmation_email_hours,
+                registrationId: registrant.id,
+                frontendUrl: frontendUrl || FRONTEND_URL
+            }));
+
+            return sendEmail({
+                to: registrant.email,
+                subject: `Action Required: Are you still coming to ${eventData.title}?`,
+                html: emailHtml
+            });
+        });
     }
 );

@@ -23,6 +23,8 @@ const createEventSchema = z.object({
     customReminderHours: z.string().transform(val => val ? parseInt(val, 10) : undefined).optional(),
     reminderNote: z.string().optional(),
     send24hReminder: z.boolean().default(false),
+    requiresAttendanceConfirmation: z.boolean().default(false),
+    confirmationEmailHours: z.string().transform(val => val ? parseInt(val, 10) : undefined).optional(),
 })
 
 type CreateEventForm = z.infer<typeof createEventSchema>
@@ -37,11 +39,13 @@ export function CreateEventPage() {
         resolver: zodResolver(createEventSchema),
         defaultValues: {
             event_type: 'online',
-            send24hReminder: false
+            send24hReminder: false,
+            requiresAttendanceConfirmation: false
         }
     })
 
     const eventType = watch('event_type')
+    const requiresConfirmation = watch('requiresAttendanceConfirmation')
 
     const onSubmit = async (data: CreateEventForm) => {
         if (!user) return
@@ -57,7 +61,7 @@ export function CreateEventPage() {
             }
 
             // Extract and map fields
-            const { customReminderHours, reminderNote, send24hReminder, ...eventData } = data;
+            const { customReminderHours, reminderNote, send24hReminder, requiresAttendanceConfirmation, confirmationEmailHours, ...eventData } = data;
 
             const { error } = await supabase.from('events').insert([
                 {
@@ -65,6 +69,7 @@ export function CreateEventPage() {
                     custom_reminder_hours: customReminderHours,
                     reminder_note: reminderNote,
                     send_24h_reminder: send24hReminder,
+                    confirmation_email_hours: requiresAttendanceConfirmation ? confirmationEmailHours : 0,
                     slug,
                     organizer_id: user.id
                 }
@@ -165,6 +170,25 @@ export function CreateEventPage() {
                             />
                             <Label htmlFor="send24hReminder">Send standard 24-hour reminder email?</Label>
                         </div>
+
+                        <div className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                id="requiresAttendanceConfirmation"
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                {...register('requiresAttendanceConfirmation')}
+                            />
+                            <Label htmlFor="requiresAttendanceConfirmation">Schedule an Attendance Confirmation Request?</Label>
+                        </div>
+
+                        {requiresConfirmation && (
+                            <div className="space-y-2 pl-6">
+                                <Label htmlFor="confirmationEmailHours">Hours before event to send request</Label>
+                                <Input id="confirmationEmailHours" type="number" placeholder="e.g. 48" {...register('confirmationEmailHours')} />
+                                <p className="text-xs text-muted-foreground">They'll get an email asking if they are still coming.</p>
+                                {errors.confirmationEmailHours && <p className="text-sm text-red-500">{errors.confirmationEmailHours.message}</p>}
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <Label htmlFor="reminderNote">Things attendees should know (included in reminder)</Label>

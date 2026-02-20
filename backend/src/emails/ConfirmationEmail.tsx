@@ -87,9 +87,6 @@ export const ConfirmationEmail = ({
                         <Text style={text}>
                             <strong>Your Registration ID:</strong> {registrationId}
                         </Text>
-                        <Button href={`${frontendUrl}/attendance-confirmed?id=${registrationId}&status=attending`} style={confirmButton}>
-                            Confirm Attendance
-                        </Button>
                     </Section>
 
                     <Hr style={hr} />
@@ -188,17 +185,4 @@ const footer = {
 const unsub = {
     color: "#8898aa",
     textDecoration: "underline",
-};
-
-const confirmButton = {
-    backgroundColor: "#10b981",
-    borderRadius: "5px",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    textDecoration: "none",
-    textAlign: "center" as const,
-    display: "block",
-    width: "100%",
-    padding: "10px",
 };

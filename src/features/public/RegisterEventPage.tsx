@@ -23,6 +23,7 @@ type EventDetails = {
     start_time: string
     current_registrations: number
     capacity: number
+    confirmation_email_hours: number | null
     organizer: {
         organization_name: string
         full_name: string
@@ -144,6 +145,25 @@ export function RegisterEventPage() {
             } catch (emailError) {
                 console.error("Failed to send confirmation email", emailError);
                 // Don't block success UI, just log it
+            }
+
+            // Trigger attendance request scheduler if hours are set
+            if (event.confirmation_email_hours && event.confirmation_email_hours > 0) {
+                try {
+                    await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/email/schedule-attendance-request`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            eventData: event,
+                            registrant: newRegistration,
+                            frontendUrl: window.location.origin
+                        })
+                    });
+                } catch (inngestError) {
+                    console.error("Failed to schedule attendance request", inngestError);
+                }
             }
 
             // Increment count (RPC or optimistic update would be better, but direct update for MVP since RLS usually blocks update on events table for public)
