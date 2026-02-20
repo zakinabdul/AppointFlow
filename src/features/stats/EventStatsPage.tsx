@@ -104,15 +104,19 @@ export function EventStatsPage() {
                                 <CardTitle>Registration Trend</CardTitle>
                             </CardHeader>
                             <CardContent className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={data.registrationTrend}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" />
-                                        <YAxis allowDecimals={false} />
-                                        <Tooltip />
-                                        <Bar dataKey="count" fill="#8884d8" />
-                                    </BarChart>
-                                </ResponsiveContainer>
+                                <div className="w-full h-full overflow-x-auto pb-4">
+                                    <div className="min-w-[500px] h-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={data.registrationTrend}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                                                <YAxis allowDecimals={false} width={40} />
+                                                <Tooltip />
+                                                <Bar dataKey="count" fill="#8884d8" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>

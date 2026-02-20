@@ -90,7 +90,7 @@ export function SignupPage() {
                             <Input
                                 id="fullName"
                                 placeholder="John Doe"
-                                className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                                className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                                 {...register('fullName')}
                             />
                             {errors.fullName && <p className="text-xs text-red-500 absolute -bottom-5">{errors.fullName.message}</p>}
@@ -100,7 +100,7 @@ export function SignupPage() {
                             <Input
                                 id="organizationName"
                                 placeholder="Acme Inc."
-                                className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                                className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                                 {...register('organizationName')}
                             />
                             {errors.organizationName && <p className="text-xs text-red-500 absolute -bottom-5">{errors.organizationName.message}</p>}
@@ -113,7 +113,7 @@ export function SignupPage() {
                             id="email"
                             type="email"
                             placeholder="m@example.com"
-                            className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                            className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                             {...register('email')}
                         />
                         {errors.email && <p className="text-xs text-red-500 absolute -bottom-5">{errors.email.message}</p>}
@@ -124,7 +124,7 @@ export function SignupPage() {
                         <Input
                             id="password"
                             type="password"
-                            className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                            className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                             {...register('password')}
                         />
                         {errors.password && <p className="text-xs text-red-500 absolute -bottom-5">{errors.password.message}</p>}

@@ -58,7 +58,7 @@ export function LoginPage() {
                             id="email"
                             type="email"
                             placeholder="m@example.com"
-                            className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                            className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                             {...register('email')}
                         />
                         {errors.email && <p className="text-sm text-red-500 absolute -bottom-6">{errors.email.message}</p>}
@@ -72,7 +72,7 @@ export function LoginPage() {
                         <Input
                             id="password"
                             type="password"
-                            className="bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
+                            className="bg-zinc-100 dark:bg-zinc-900 border-0 focus-visible:ring-1 focus-visible:ring-primary h-12"
                             {...register('password')}
                         />
                         {errors.password && <p className="text-sm text-red-500 absolute -bottom-6">{errors.password.message}</p>}

@@ -25,8 +25,8 @@ export function AuthLayout() {
                     <div className="mt-6 flex items-center gap-4">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-400 to-cyan-400"></div>
                         <div>
-                            <p className="font-semibold text-white">Alex Chen</p>
-                            <p className="text-sm text-zinc-400">Head of Events, TechCorp</p>
+                            <p className="font-semibold text-indigo-950 dark:text-white">Alex Chen</p>
+                            <p className="text-sm text-indigo-900/70 dark:text-zinc-400">Head of Events, TechCorp</p>
                         </div>
                     </div>
                 </div>
