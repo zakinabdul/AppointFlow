@@ -11,6 +11,7 @@ import {
     Hr,
 } from "@react-email/components";
 import * as React from "react";
+import * as S from "./styles";
 
 interface BroadcastEmailProps {
     registrantName: string;
@@ -33,22 +34,28 @@ export const BroadcastEmail = ({
         <Html>
             <Head />
             <Preview>{subject}</Preview>
-            <Body style={main}>
-                <Container style={container}>
-                    <Heading style={h1}>Message from {eventTitle}</Heading>
-                    <Text style={text}>Hi {registrantName},</Text>
+            <Body style={S.main}>
+                <Container style={S.container}>
+                    <Section style={S.headerBrand}>
+                        <div style={S.headerLogo}>AF</div>
+                    </Section>
 
-                    <div style={contentBox} dangerouslySetInnerHTML={{ __html: htmlBody }} />
+                    <Heading style={S.h1}>Message from {eventTitle}</Heading>
+                    <Text style={S.text}>Hi {registrantName},</Text>
 
-                    <Hr style={hr} />
+                    <Section style={{ ...S.highlightBox, backgroundColor: "#ffffff", padding: "0" }}>
+                        <div style={{ ...S.text, color: "#18181B" }} dangerouslySetInnerHTML={{ __html: htmlBody }} />
+                    </Section>
 
-                    <Text style={footer}>
-                        This message was sent by the organizer of {eventTitle}.
-                        <br />
-                        AppointFlow
-                        <br />
-                        <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={unsub}>
-                            Unsubscribe
+                    <Hr style={S.hr} />
+
+                    <Text style={S.footer}>
+                        This message was sent by the organizer of <strong>{eventTitle}</strong>.
+                        <br /><br />
+                        Powered by <strong>AppointFlow</strong>
+                        <br /><br />
+                        <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={S.unsub}>
+                            Unsubscribe from updates
                         </Link>
                     </Text>
                 </Container>
@@ -56,12 +63,3 @@ export const BroadcastEmail = ({
         </Html>
     );
 };
-
-const main = { backgroundColor: "#f6f9fc", fontFamily: 'sans-serif' };
-const container = { backgroundColor: "#ffffff", margin: "0 auto", padding: "20px 0 48px" };
-const contentBox = { padding: "0 12px", lineHeight: "24px", color: "#333" };
-const h1 = { color: "#333", fontSize: "24px", fontWeight: "bold", textAlign: "center" as const, margin: "30px 0" };
-const text = { color: "#333", fontSize: "16px", lineHeight: "24px", padding: "0 12px" };
-const hr = { borderColor: "#e6ebf1", margin: "40px 0 20px" };
-const footer = { color: "#8898aa", fontSize: "12px", textAlign: "center" as const };
-const unsub = { color: "#8898aa", textDecoration: "underline" };

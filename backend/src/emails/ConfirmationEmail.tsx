@@ -12,6 +12,7 @@ import {
     Hr,
 } from "@react-email/components";
 import * as React from "react";
+import * as S from "./styles";
 
 interface ConfirmationEmailProps {
     registrantName: string;
@@ -42,59 +43,70 @@ export const ConfirmationEmail = ({
         <Html>
             <Head />
             <Preview>Registration confirmed for {eventTitle}</Preview>
-            <Body style={main}>
-                <Container style={container}>
-                    <Heading style={h1}>Registration Confirmed! 🎉</Heading>
-                    <Text style={text}>Hi {registrantName},</Text>
+            <Body style={S.main}>
+                <Container style={S.container}>
+                    <Section style={S.headerBrand}>
+                        <div style={S.headerLogo}>AF</div>
+                    </Section>
+
+                    <Heading style={S.h1}>Registration Confirmed! 🎉</Heading>
+                    <Text style={S.text}>Hi {registrantName},</Text>
 
                     {aiWelcomeMessage ? (
-                        <Text style={text}>{aiWelcomeMessage}</Text>
+                        <Text style={S.text}>{aiWelcomeMessage}</Text>
                     ) : (
-                        <Text style={text}>
+                        <Text style={S.text}>
                             You are successfully registered for <strong>{eventTitle}</strong>.
                             We are excited to have you join us!
                         </Text>
                     )}
 
-                    <Section style={box}>
-                        <Text style={paragraph}>
-                            <strong>Date:</strong> {eventDate}
-                            <br />
-                            <strong>Time:</strong> {eventTime}
-                            <br />
-                            <strong>Location:</strong> {isOnline ? "Online Event" : location}
-                        </Text>
+                    <Section style={S.highlightBox}>
+                        <div style={S.detailRow}>
+                            <span style={S.detailLabel}>Date:</span> {eventDate}
+                        </div>
+                        <div style={S.detailRow}>
+                            <span style={S.detailLabel}>Time:</span> {eventTime}
+                        </div>
+                        <div style={S.detailRow}>
+                            <span style={S.detailLabel}>Location:</span> {isOnline ? "Online Event" : location}
+                        </div>
 
                         {isOnline && meetingLink && (
-                            <Button style={button} href={meetingLink}>
-                                Join Online Meeting
-                            </Button>
+                            <Section style={{ marginTop: '24px' }}>
+                                <Button style={S.buttonPrimary} href={meetingLink}>
+                                    Join Online Meeting
+                                </Button>
+                            </Section>
                         )}
 
                         {!isOnline && (
-                            <Button
-                                style={button}
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                    location
-                                )}`}
-                            >
-                                View on Google Maps
-                            </Button>
+                            <Section style={{ marginTop: '24px' }}>
+                                <Button
+                                    style={S.buttonPrimary}
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                        location
+                                    )}`}
+                                >
+                                    View on Google Maps
+                                </Button>
+                            </Section>
                         )}
                     </Section>
 
-                    <Section style={section}>
-                        <Text style={text}>
-                            <strong>Your Registration ID:</strong> {registrationId}
+                    <Section style={S.highlightBox}>
+                        <Text style={{ ...S.text, marginBottom: 0, textAlign: 'center' }}>
+                            <span style={S.detailLabel}>Registration ID:</span><br />
+                            <strong style={{ fontSize: '18px', letterSpacing: '1px' }}>{registrationId.split('-')[0].toUpperCase()}</strong>
                         </Text>
                     </Section>
 
-                    <Hr style={hr} />
+                    <Hr style={S.hr} />
 
-                    <Text style={footer}>
-                        AppointFlow
-                        <br />
-                        <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={unsub}>
+                    <Text style={S.footer}>
+                        Powered by <strong>AppointFlow</strong>
+                        <br /><br />
+                        <Link href={`${frontendUrl}/api/email/unsubscribe?id=${registrationId}`} style={S.unsub}>
                             Unsubscribe from event updates
                         </Link>
                     </Text>
@@ -102,87 +114,4 @@ export const ConfirmationEmail = ({
             </Body>
         </Html>
     );
-};
-
-// Styles
-const main = {
-    backgroundColor: "#f6f9fc",
-    fontFamily:
-        '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-    backgroundColor: "#ffffff",
-    margin: "0 auto",
-    padding: "20px 0 48px",
-    marginBottom: "64px",
-};
-
-const box = {
-    padding: "24px",
-    backgroundColor: "#f2f3f3",
-    borderRadius: "4px",
-};
-
-const h1 = {
-    color: "#333",
-    fontSize: "24px",
-    fontWeight: "bold",
-    textAlign: "center" as const,
-    margin: "30px 0",
-};
-
-const text = {
-    color: "#333",
-    fontSize: "16px",
-    lineHeight: "24px",
-    textAlign: "left" as const,
-};
-
-const paragraph = {
-    color: "#333",
-    fontSize: "16px",
-    lineHeight: "24px",
-    textAlign: "left" as const,
-    marginBottom: "20px",
-};
-
-const button = {
-    backgroundColor: "#000",
-    borderRadius: "5px",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    textDecoration: "none",
-    textAlign: "center" as const,
-    display: "block",
-    width: "100%",
-    padding: "10px",
-};
-
-const section = {
-    textAlign: "center" as const,
-    marginTop: "32px",
-};
-
-const link = {
-    color: "#2754C5",
-    textDecoration: "underline",
-};
-
-const hr = {
-    borderColor: "#e6ebf1",
-    margin: "20px 0",
-};
-
-const footer = {
-    color: "#8898aa",
-    fontSize: "12px",
-    lineHeight: "16px",
-    textAlign: "center" as const,
-};
-
-const unsub = {
-    color: "#8898aa",
-    textDecoration: "underline",
 };
