@@ -90,8 +90,12 @@ export function CreateEventPage() {
                                 title: eventData.title,
                                 start_date: eventData.start_date,
                                 start_time: eventData.start_time,
-                                // Calculate exact local start datetime in UTC ISO string so the server doesn't offset it
-                                local_start_iso: new Date(`${eventData.start_date}T${eventData.start_time}:00`).toISOString(),
+                                // Calculate exact local start datetime in UTC ISO string safely
+                                local_start_iso: (() => {
+                                    const timeStr = (eventData.start_time || "00:00").substring(0, 5);
+                                    const d = new Date(`${eventData.start_date}T${timeStr}:00`);
+                                    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+                                })(),
                                 location: eventData.location,
                                 event_type: eventData.event_type,
                                 meeting_link: eventData.location,

@@ -158,7 +158,11 @@ export function RegisterEventPage() {
                         body: JSON.stringify({
                             eventData: {
                                 ...event,
-                                local_start_iso: new Date(`${event.start_date}T${event.start_time}:00`).toISOString(),
+                                local_start_iso: (() => {
+                                    const timeStr = (event.start_time || "00:00").substring(0, 5);
+                                    const d = new Date(`${event.start_date}T${timeStr}:00`);
+                                    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+                                })(),
                             },
                             registrant: newRegistration,
                             frontendUrl: window.location.origin
