@@ -1,4 +1,4 @@
-# AppointFlow (Evently)
+# AppointFlow 
 
 A modern, full-stack event registration and management platform inspired by state-of-the-art SaaS designs. Built with React, Vite, Tailwind CSS, Supabase, and Inngest.
 
