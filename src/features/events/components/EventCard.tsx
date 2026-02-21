@@ -1,8 +1,18 @@
-
 import { Calendar, MapPin, Users, Copy, ArrowRight, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Event } from '../../dashboard/useEvents'
 import { cn } from '@/lib/utils'
@@ -73,19 +83,38 @@ export function EventCard({ event, onDelete }: EventCardProps) {
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-3 pt-4 border-t bg-muted/20">
                 {onDelete && (
-                    <Button variant="outline" size="sm" onClick={async () => {
-                        if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
-                            try {
-                                await onDelete(event.id);
-                                toast.success('Event deleted successfully');
-                            } catch (e) {
-                                toast.error('Failed to delete event');
-                            }
-                        }
-                    }} className="col-span-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Event
-                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="col-span-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete Event
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-md bg-card border-border shadow-2xl">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="text-xl text-foreground font-bold">Delete Event</AlertDialogTitle>
+                                <AlertDialogDescription className="text-base text-muted-foreground">
+                                    Are you sure you want to delete <strong className="text-foreground">{event.title}</strong>? This action cannot be undone and will permanently remove all associated registrations.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="mt-6 gap-2 sm:gap-0">
+                                <AlertDialogCancel className="mt-0 border-transparent bg-muted/50 hover:bg-muted font-medium">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className="bg-red-500 text-white hover:bg-red-600 shadow-sm"
+                                    onClick={async () => {
+                                        try {
+                                            await onDelete(event.id);
+                                            toast.success('Event deleted successfully');
+                                        } catch (e) {
+                                            toast.error('Failed to delete event');
+                                        }
+                                    }}
+                                >
+                                    Yes, delete event
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 )}
                 <Button variant="outline" size="sm" onClick={copyLink} className="w-full bg-background hover:bg-muted font-medium">
                     <Copy className="mr-2 h-4 w-4" />
