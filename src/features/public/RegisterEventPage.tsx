@@ -110,11 +110,15 @@ export function RegisterEventPage() {
                 throw new Error('You are already registered for this event with this email.')
             }
 
+            // Generate ID on the client to avoid needing SELECT permissions to read the returning row
+            const registrationId = crypto.randomUUID()
+
             // Register
-            const { data: newRegistration, error: regError } = await supabase
+            const { error: regError } = await supabase
                 .from('registrations')
                 .insert([
                     {
+                        id: registrationId,
                         event_id: event.id,
                         full_name: data.fullName,
                         email: data.email,
@@ -123,8 +127,6 @@ export function RegisterEventPage() {
                         professional_status: data.professionalStatus
                     }
                 ])
-                .select()
-                .single()
 
             if (regError) throw regError
 
@@ -139,7 +141,7 @@ export function RegisterEventPage() {
                         registrantName: data.fullName,
                         registrantEmail: data.email,
                         eventDetails: event,
-                        registrationId: newRegistration.id
+                        registrationId: registrationId
                     })
                 });
             } catch (emailError) {
@@ -164,7 +166,12 @@ export function RegisterEventPage() {
                                     return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
                                 })(),
                             },
-                            registrant: newRegistration,
+                            registrant: {
+                                id: registrationId,
+                                event_id: event.id,
+                                full_name: data.fullName,
+                                email: data.email
+                            },
                             frontendUrl: window.location.origin
                         })
                     });
